@@ -61,7 +61,6 @@ import { LimitedMap } from "@silverbulletmd/silverbullet/lib/limited_map";
 import { fsEndpoint } from "./spaces/constants.ts";
 import { diffAndPrepareChanges } from "./codemirror/cm_util.ts";
 import { DocumentEditor } from "./document_editor.ts";
-import { reloadAllWidgets } from "./codemirror/code_widget.ts";
 import { parseExpressionString } from "./space_lua/parse.ts";
 import type { Config } from "./config.ts";
 import type {
@@ -545,8 +544,9 @@ export class Client {
                     meta: enrichedMeta,
                   });
 
-                  // Refresh widgets after metadata is updated so they can access updated frontmatter data
-                  this.reloadWidgetsWithErrorHandling("after save");
+                  // Trigger a no-op dispatch to refresh widgets with updated metadata
+                  // This causes the decorator state field to re-evaluate and widgets to re-render
+                  this.editorView.dispatch({});
                 }
               })
               .catch((e) => {
@@ -809,16 +809,6 @@ export class Client {
         this.ui.viewState.current?.meta.perm === "ro",
       ),
     );
-  }
-
-  /**
-   * Reloads all widgets with error handling
-   * @param context Description of when/why widgets are being reloaded (for error logging)
-   */
-  private reloadWidgetsWithErrorHandling(context: string) {
-    reloadAllWidgets().catch((e) => {
-      console.error(`Failed to reload widgets ${context}:`, e);
-    });
   }
 
   // Code completion support
@@ -1165,8 +1155,9 @@ export class Client {
           meta: enrichedMeta,
         });
 
-        // Refresh widgets after metadata is updated so they can access frontmatter data
-        this.reloadWidgetsWithErrorHandling("after page load");
+        // Trigger a no-op dispatch to refresh widgets with updated metadata
+        // This causes the decorator state field to re-evaluate and widgets to re-render
+        this.editorView.dispatch({});
       } catch (e: any) {
         console.log(
           `There was an error trying to fetch enriched metadata: ${e.message}`,
