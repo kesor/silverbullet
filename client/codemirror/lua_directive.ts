@@ -95,12 +95,11 @@ export function luaDirectivePlugin(client: Client) {
                       .args[0];
 
                   const tl = new LuaEnv();
-                  // Always get fresh metadata from viewState to handle async metadata updates
-                  // Fall back to captured metadata if fresh is not available, then to minimal name object
-                  const freshPageMeta = client.ui.viewState.current?.meta as PageMeta;
+                  // Fetch current page metadata at execution time to get enriched frontmatter
+                  const currentPageMetaAtExecution = client.ui.viewState.current?.meta as PageMeta;
                   tl.setLocal(
                     "currentPage",
-                    freshPageMeta || currentPageMeta || (client.ui.viewState.current
+                    currentPageMetaAtExecution || currentPageMeta || (client.ui.viewState.current
                       ? {
                         name: getNameFromPath(
                           client.ui.viewState.current.path,
