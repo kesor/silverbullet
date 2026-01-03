@@ -546,9 +546,7 @@ export class Client {
                   });
 
                   // Refresh widgets after metadata is updated so they can access updated frontmatter data
-                  reloadAllWidgets().catch((e) => {
-                    console.error("Failed to reload widgets after save:", e);
-                  });
+                  this.reloadWidgetsWithErrorHandling("after save");
                 }
               })
               .catch((e) => {
@@ -811,6 +809,16 @@ export class Client {
         this.ui.viewState.current?.meta.perm === "ro",
       ),
     );
+  }
+
+  /**
+   * Reloads all widgets with error handling
+   * @param context Description of when/why widgets are being reloaded (for error logging)
+   */
+  private reloadWidgetsWithErrorHandling(context: string) {
+    reloadAllWidgets().catch((e) => {
+      console.error(`Failed to reload widgets ${context}:`, e);
+    });
   }
 
   // Code completion support
@@ -1158,9 +1166,7 @@ export class Client {
         });
 
         // Refresh widgets after metadata is updated so they can access frontmatter data
-        reloadAllWidgets().catch((e) => {
-          console.error("Failed to reload widgets after page load:", e);
-        });
+        this.reloadWidgetsWithErrorHandling("after page load");
       } catch (e: any) {
         console.log(
           `There was an error trying to fetch enriched metadata: ${e.message}`,
