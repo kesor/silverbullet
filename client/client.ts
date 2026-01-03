@@ -545,8 +545,17 @@ export class Client {
                   });
 
                   // Trigger a no-op dispatch to refresh widgets with updated metadata
-                  // This causes the decorator state field to re-evaluate and widgets to re-render
-                  this.editorView.dispatch({});
+                  // Only if no modal UI elements are open (to avoid interfering with user interaction)
+                  const viewState = this.ui.viewState;
+                  if (
+                    !viewState.showCommandPalette &&
+                    !viewState.showPageNavigator &&
+                    !viewState.showFilterBox &&
+                    !viewState.showConfirm &&
+                    !viewState.showPrompt
+                  ) {
+                    this.editorView.dispatch({});
+                  }
                 }
               })
               .catch((e) => {
@@ -1156,8 +1165,17 @@ export class Client {
         });
 
         // Trigger a no-op dispatch to refresh widgets with updated metadata
-        // This causes the decorator state field to re-evaluate and widgets to re-render
-        this.editorView.dispatch({});
+        // Only if no modal UI elements are open (to avoid interfering with user interaction)
+        const viewState = this.ui.viewState;
+        if (
+          !viewState.showCommandPalette &&
+          !viewState.showPageNavigator &&
+          !viewState.showFilterBox &&
+          !viewState.showConfirm &&
+          !viewState.showPrompt
+        ) {
+          this.editorView.dispatch({});
+        }
       } catch (e: any) {
         console.log(
           `There was an error trying to fetch enriched metadata: ${e.message}`,
