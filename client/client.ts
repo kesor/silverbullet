@@ -544,6 +544,9 @@ export class Client {
                     type: "update-current-page-meta",
                     meta: enrichedMeta,
                   });
+
+                  // Refresh widgets after metadata is updated so they can access updated frontmatter data
+                  await reloadAllWidgets();
                 }
               })
               .catch((e) => {
