@@ -95,9 +95,11 @@ export function luaDirectivePlugin(client: Client) {
                       .args[0];
 
                   const tl = new LuaEnv();
+                  // Always get fresh metadata from viewState to handle async metadata updates
+                  const freshPageMeta = client.ui.viewState.current?.meta as PageMeta;
                   tl.setLocal(
                     "currentPage",
-                    currentPageMeta || (client.ui.viewState.current
+                    freshPageMeta || (client.ui.viewState.current
                       ? {
                         name: getNameFromPath(
                           client.ui.viewState.current.path,
