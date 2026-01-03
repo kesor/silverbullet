@@ -546,7 +546,9 @@ export class Client {
                   });
 
                   // Refresh widgets after metadata is updated so they can access updated frontmatter data
-                  await reloadAllWidgets();
+                  reloadAllWidgets().catch((e) => {
+                    console.error("Failed to reload widgets after save:", e);
+                  });
                 }
               })
               .catch((e) => {
@@ -1156,7 +1158,9 @@ export class Client {
         });
 
         // Refresh widgets after metadata is updated so they can access frontmatter data
-        await reloadAllWidgets();
+        reloadAllWidgets().catch((e) => {
+          console.error("Failed to reload widgets after page load:", e);
+        });
       } catch (e: any) {
         console.log(
           `There was an error trying to fetch enriched metadata: ${e.message}`,
