@@ -180,9 +180,20 @@ export class PathPageNavigator {
 }
 
 export function parseRefFromURI(): Ref | null {
-  const locationRef = parseToRef(decodeURIComponent(
-    location.href.substring(document.baseURI.length), //this essentially returns location with prefix and leading slash removed (equivalent to location.pathname.substring(prefix.length).substring(1)),
-  ));
+  // Extract the base pathname from document.baseURI to properly handle URL prefixes
+  const baseURL = new URL(document.baseURI);
+  const basePath = baseURL.pathname;
+  
+  // Use location.pathname (which excludes hash and query params) instead of location.href
+  // to avoid double-parsing the hash fragment
+  let refString = location.pathname;
+  
+  // Remove the base path prefix if present
+  if (refString.startsWith(basePath)) {
+    refString = refString.substring(basePath.length);
+  }
+  
+  const locationRef = parseToRef(decodeURIComponent(refString));
 
   if (locationRef && location.hash) {
     locationRef.details = {
