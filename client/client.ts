@@ -61,6 +61,7 @@ import { LimitedMap } from "@silverbulletmd/silverbullet/lib/limited_map";
 import { fsEndpoint } from "./spaces/constants.ts";
 import { diffAndPrepareChanges } from "./codemirror/cm_util.ts";
 import { DocumentEditor } from "./document_editor.ts";
+import { reloadAllWidgets } from "./codemirror/code_widget.ts";
 import { parseExpressionString } from "./space_lua/parse.ts";
 import type { Config } from "./config.ts";
 import type {
@@ -1150,6 +1151,9 @@ export class Client {
           type: "update-current-page-meta",
           meta: enrichedMeta,
         });
+
+        // Refresh widgets after metadata is updated so they can access frontmatter data
+        await reloadAllWidgets();
       } catch (e: any) {
         console.log(
           `There was an error trying to fetch enriched metadata: ${e.message}`,
