@@ -193,6 +193,11 @@ export function parseRefFromURI(): Ref | null {
     refString = refString.substring(basePath.length);
   }
   
+  // Remove leading slash if present (safety check for edge cases)
+  if (refString.startsWith("/")) {
+    refString = refString.substring(1);
+  }
+  
   const locationRef = parseToRef(decodeURIComponent(refString));
 
   if (locationRef && location.hash) {
