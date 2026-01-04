@@ -543,11 +543,6 @@ export class Client {
                     type: "update-current-page-meta",
                     meta: enrichedMeta,
                   });
-
-                  // Trigger widget refresh after metadata is updated
-                  Promise.resolve().then(() => {
-                    this.system.invokeFunction("codeWidget", "refreshAll", []).catch(console.error);
-                  });
                 }
               })
               .catch((e) => {
@@ -1154,11 +1149,6 @@ export class Client {
         this.ui.viewDispatch({
           type: "update-current-page-meta",
           meta: enrichedMeta,
-        });
-
-        // Trigger widget refresh after metadata is updated
-        Promise.resolve().then(() => {
-          this.system.invokeFunction("codeWidget", "refreshAll", []).catch(console.error);
         });
       } catch (e: any) {
         console.log(
