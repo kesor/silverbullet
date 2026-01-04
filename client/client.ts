@@ -544,8 +544,10 @@ export class Client {
                     meta: enrichedMeta,
                   });
 
-                  // Clear widget cache when page meta changes
+                  // Clear widget cache and trigger decoration update when page meta changes
                   this.clearWidgetCacheForPage(enrichedMeta.name);
+                  // Force CodeMirror to recalculate decorations (which includes Lua widgets)
+                  this.editorView.dispatch({});
                 }
               })
               .catch((e) => {
@@ -1154,8 +1156,10 @@ export class Client {
           meta: enrichedMeta,
         });
 
-        // Clear widget cache when page meta changes
+        // Clear widget cache and trigger decoration update when page meta changes
         this.clearWidgetCacheForPage(enrichedMeta.name);
+        // Force CodeMirror to recalculate decorations (which includes Lua widgets)
+        this.editorView.dispatch({});
       } catch (e: any) {
         console.log(
           `There was an error trying to fetch enriched metadata: ${e.message}`,
