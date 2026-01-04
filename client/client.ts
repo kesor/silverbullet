@@ -142,7 +142,7 @@ export class Client {
   private progressTimeout?: number;
   // Widget and image height caching
   private widgetCache = new LimitedMap<WidgetCacheItem>(100); // bodyText -> WidgetCacheItem
-  private currentPageMeta: PageMeta | undefined;
+  public currentPageMeta: PageMeta | undefined;
   debouncedWidgetCacheFlush = throttle(() => {
     this.ds.set(["cache", "widgets"], this.widgetCache.toJSON())
       .catch(
@@ -544,6 +544,9 @@ export class Client {
                     type: "update-current-page-meta",
                     meta: enrichedMeta,
                   });
+
+                  // Force widget refresh by dispatching editor:pageLoaded event
+                  this.eventHook.dispatchEvent("editor:pageLoaded", pageName).catch(console.error);
                 }
               })
               .catch((e) => {
@@ -1157,6 +1160,9 @@ export class Client {
           type: "update-current-page-meta",
           meta: enrichedMeta,
         });
+
+        // Force widget refresh by dispatching editor:pageLoaded event
+        this.eventHook.dispatchEvent("editor:pageLoaded", pageName).catch(console.error);
       } catch (e: any) {
         console.log(
           `There was an error trying to fetch enriched metadata: ${e.message}`,
