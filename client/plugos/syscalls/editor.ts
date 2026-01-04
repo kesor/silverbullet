@@ -41,9 +41,19 @@ export function editorSyscalls(client: Client): SysCallMapping {
       return client.currentName();
     },
     "editor.getCurrentPageMeta": (): Promise<PageMeta | undefined> => {
-      // Return current UI state metadata instead of querying index
-      // This ensures metadata is available immediately during SPA navigation
-      return Promise.resolve(client.ui.viewState.current?.meta);
+      // First try UI state, then fall back to index query
+      const uiMeta = client.ui.viewState.current?.meta;
+      if (uiMeta) {
+        return Promise.resolve(uiMeta);
+      }
+      
+      // Fallback to index query
+      const name = client.currentName();
+      return client.clientSystem.localSyscall("index.getObjectByRef", [
+        name,
+        "page",
+        name,
+      ]);
     },
     "editor.getCurrentPath": (_ctx): string => {
       return client.currentPath();
