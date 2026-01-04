@@ -94,25 +94,21 @@ export function luaDirectivePlugin(client: Client) {
                     (parsedLua.statements[0] as LuaFunctionCallStatement).call
                       .args[0];
 
-                  // Get metadata directly from the client system instead of UI state
+                  // Get metadata from the most reliable source available
                   const pageName = client.currentName();
-                  let currentPageData;
+                  let currentPageData = client.ui.viewState.current?.meta as PageMeta;
                   
-                  try {
-                    // Try to get enriched metadata from index first
-                    currentPageData = await client.clientSystem.getObjectByRef<PageMeta>(
-                      pageName,
-                      "page", 
-                      pageName
-                    );
-                  } catch (e) {
-                    // Fallback to basic metadata from space
+                  // If UI state doesn't have metadata, try to get it from the client system cache
+                  if (!currentPageData || !currentPageData.date) {
+                    // Try to get from client system's cached objects
                     try {
-                      const doc = await client.space.readPage(pageName);
-                      currentPageData = doc.meta;
-                    } catch (e2) {
-                      // Final fallback
-                      currentPageData = { name: pageName };
+                      const cachedMeta = client.clientSystem.system.objectCache.get(`page:${pageName}`);
+                      if (cachedMeta) {
+                        currentPageData = cachedMeta as PageMeta;
+                      }
+                    } catch (e) {
+                      // Fallback to basic page info
+                      currentPageData = { name: pageName } as PageMeta;
                     }
                   }
                   
