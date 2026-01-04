@@ -17,7 +17,7 @@ export async function reloadAllWidgets() {
     }
     // Create an empty widget DIV node
     const newEl = document.createElement("div");
-    await widget.renderContent(newEl, undefined);
+    await widget.renderContent(newEl);
     // Replace the old widget with the new one
     widget.dom.innerHTML = "";
     widget.dom.appendChild(newEl);

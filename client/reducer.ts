@@ -60,7 +60,7 @@ export default function reducer(
             globalThis.client.isRefreshingWidgets = true;
             globalThis.client.widgetCache.clear();
             try {
-              globalThis.client.runCommandByName("refreshAllWidgets").catch(console.error);
+              globalThis.client.runCommandByName("Widgets: Refresh All").catch(console.error);
             } finally {
               globalThis.client.isRefreshingWidgets = false;
             }
