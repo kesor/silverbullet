@@ -1138,42 +1138,39 @@ export class Client {
       lastOpened: Date.now(),
     });
 
-    this.ui.viewDispatch({
-      type: "page-loaded",
-      meta: doc.meta,
-      path: path,
-    });
-
-    // Fetch the meta which includes the possibly indexed stuff, like page
-    // decorations
+    // Fetch enriched metadata BEFORE dispatching page-loaded to prevent widget race condition
+    let finalMeta = doc.meta;
     if (await this.clientSystem.hasPreIndexCompleted()) {
       try {
         const enrichedMeta = await this.clientSystem.getObjectByRef<PageMeta>(
           pageName,
           "page",
           pageName,
-        ) ?? doc.meta;
+        );
+        if (enrichedMeta) {
+          finalMeta = enrichedMeta;
+          
+          const body = document.body;
+          body.removeAttribute("class");
 
-        const body = document.body;
-        body.removeAttribute("class");
-
-        if (enrichedMeta.pageDecoration?.cssClasses) {
-          body.className = enrichedMeta.pageDecoration.cssClasses
-            .join(" ")
-            .replaceAll(/[^a-zA-Z0-9-_ ]/g, "");
+          if (enrichedMeta.pageDecoration?.cssClasses) {
+            body.className = enrichedMeta.pageDecoration.cssClasses
+              .join(" ")
+              .replaceAll(/[^a-zA-Z0-9-_ ]/g, "");
+          }
         }
-
-        this.ui.viewDispatch({
-          type: "update-current-page-meta",
-          meta: enrichedMeta,
-          pageName: pageName,
-        });
       } catch (e: any) {
         console.log(
           `There was an error trying to fetch enriched metadata: ${e.message}`,
         );
       }
     }
+
+    this.ui.viewDispatch({
+      type: "page-loaded",
+      meta: finalMeta,
+      path: path,
+    });
 
     // When loading a different page OR if the page is read-only (in which case we don't want to apply local patches, because there's no point)
     if (loadingDifferentPath || doc.meta.perm === "ro") {
