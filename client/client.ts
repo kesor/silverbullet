@@ -1127,6 +1127,9 @@ export class Client {
       path: path,
     });
 
+    console.log("Basic meta:", doc.meta);
+    console.log("Has date?", doc.meta.date);
+
     // Fetch the meta which includes the possibly indexed stuff, like page
     // decorations
     if (await this.clientSystem.hasPreIndexCompleted()) {
