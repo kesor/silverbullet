@@ -1,6 +1,7 @@
 import type { Action, AppViewState } from "./types/ui.ts";
 import type { PageMeta } from "../plug-api/types/index.ts";
 import {
+  getNameFromPath,
   isMarkdownPath,
   parseToRef,
 } from "@silverbulletmd/silverbullet/lib/ref";
@@ -51,17 +52,18 @@ export default function reducer(
           ? { ...action.meta, lastOpened: Date.now() }
           : pageMeta
       );
-      // Can't update page meta if not on a page
-      if (!state.current || !isMarkdownPath(state.current.path)) {
-        return state;
+      // Only update current page meta if it matches the currently loaded page
+      if (state.current && isMarkdownPath(state.current.path) && 
+          getNameFromPath(state.current.path) === action.pageName) {
+        return {
+          ...state,
+          current: {
+            ...state.current,
+            meta: action.meta,
+          },
+        };
       }
-      return {
-        ...state,
-        current: {
-          ...state.current,
-          meta: action.meta,
-        },
-      };
+      return state;
     }
     case "online-status-change":
       return {

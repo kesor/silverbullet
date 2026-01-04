@@ -119,7 +119,7 @@ export type Action =
   | { type: "document-editor-changed" }
   | { type: "document-editor-saved" }
   | { type: "online-status-change"; isOnline: boolean }
-  | { type: "update-current-page-meta"; meta: PageMeta }
+  | { type: "update-current-page-meta"; meta: PageMeta; pageName: string }
   | { type: "update-page-list"; allPages: PageMeta[] }
   | { type: "update-document-list"; allDocuments: DocumentMeta[] }
   | { type: "start-navigate"; mode: "page" | "meta" | "document" | "all" }

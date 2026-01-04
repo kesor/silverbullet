@@ -544,6 +544,7 @@ export class Client {
                   this.ui.viewDispatch({
                     type: "update-current-page-meta",
                     meta: enrichedMeta,
+                    pageName: this.currentName(),
                   });
 
                   // Clear widget cache and refresh widgets when metadata updates
@@ -1165,6 +1166,7 @@ export class Client {
         this.ui.viewDispatch({
           type: "update-current-page-meta",
           meta: enrichedMeta,
+          pageName: pageName, // Add page name to verify it matches current page
         });
 
         // Clear widget cache and refresh widgets when metadata updates
