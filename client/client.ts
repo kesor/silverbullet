@@ -544,10 +544,8 @@ export class Client {
                     meta: enrichedMeta,
                   });
 
-                  // Clear widget cache and trigger decoration update when page meta changes
-                  this.clearWidgetCacheForPage(enrichedMeta.name);
-                  // Force CodeMirror to recalculate decorations (which includes Lua widgets)
-                  this.editorView.dispatch({});
+                  // Trigger widget refresh when page meta changes
+                  this.system.invokeFunction("codeWidget", "refreshAll", []).catch(console.error);
                 }
               })
               .catch((e) => {
@@ -1156,10 +1154,8 @@ export class Client {
           meta: enrichedMeta,
         });
 
-        // Clear widget cache and trigger decoration update when page meta changes
-        this.clearWidgetCacheForPage(enrichedMeta.name);
-        // Force CodeMirror to recalculate decorations (which includes Lua widgets)
-        this.editorView.dispatch({});
+        // Trigger widget refresh when page meta changes
+        this.system.invokeFunction("codeWidget", "refreshAll", []).catch(console.error);
       } catch (e: any) {
         console.log(
           `There was an error trying to fetch enriched metadata: ${e.message}`,
@@ -1387,19 +1383,6 @@ export class Client {
     return this.widgetCache.get(key);
   }
 
-  clearWidgetCacheForPage(pageName: string) {
-    // Clear all widget cache entries that contain this page name
-    const keysToDelete: string[] = [];
-    for (const [key] of this.widgetCache.entries()) {
-      if (key.endsWith(`:${pageName}`)) {
-        keysToDelete.push(key);
-      }
-    }
-    for (const key of keysToDelete) {
-      this.widgetCache.delete(key);
-    }
-    this.debouncedWidgetCacheFlush();
-  }
 
   async handleServiceWorkerMessage(message: ServiceWorkerSourceMessage) {
     switch (message.type) {
