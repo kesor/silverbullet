@@ -544,9 +544,8 @@ export class Client {
                     meta: enrichedMeta,
                   });
 
-                  // Clear widget cache and refresh widgets when page meta changes
+                  // Clear widget cache when page meta changes
                   this.clearWidgetCacheForPage(enrichedMeta.name);
-                  this.clientSystem.localSyscall("system.invokeFunction", ["index.refreshWidgets"]).catch(console.error);
                 }
               })
               .catch((e) => {
@@ -1155,9 +1154,8 @@ export class Client {
           meta: enrichedMeta,
         });
 
-        // Clear widget cache and refresh widgets when page meta changes
+        // Clear widget cache when page meta changes
         this.clearWidgetCacheForPage(enrichedMeta.name);
-        this.clientSystem.localSyscall("system.invokeFunction", ["index.refreshWidgets"]).catch(console.error);
       } catch (e: any) {
         console.log(
           `There was an error trying to fetch enriched metadata: ${e.message}`,
