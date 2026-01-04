@@ -1166,22 +1166,8 @@ export class Client {
         this.ui.viewDispatch({
           type: "update-current-page-meta",
           meta: enrichedMeta,
-          pageName: pageName, // Add page name to verify it matches current page
+          pageName: pageName,
         });
-
-        // Clear widget cache and refresh widgets when metadata updates
-        // Use flag to prevent infinite loops
-        if (!this.isRefreshingWidgets) {
-          this.isRefreshingWidgets = true;
-          this.widgetCache.clear();
-          setTimeout(() => {
-            try {
-              this.runCommandByName("refreshAllWidgets").catch(console.error);
-            } finally {
-              this.isRefreshingWidgets = false;
-            }
-          }, 50);
-        }
       } catch (e: any) {
         console.log(
           `There was an error trying to fetch enriched metadata: ${e.message}`,

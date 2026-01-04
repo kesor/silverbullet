@@ -54,6 +54,19 @@ export default function reducer(
       );
       // Only update current page meta if we have a current page
       if (state.current && isMarkdownPath(state.current.path)) {
+        // Trigger widget refresh after metadata update
+        setTimeout(() => {
+          if (globalThis.client && !globalThis.client.isRefreshingWidgets) {
+            globalThis.client.isRefreshingWidgets = true;
+            globalThis.client.widgetCache.clear();
+            try {
+              globalThis.client.runCommandByName("refreshAllWidgets").catch(console.error);
+            } finally {
+              globalThis.client.isRefreshingWidgets = false;
+            }
+          }
+        }, 0);
+        
         return {
           ...state,
           current: {

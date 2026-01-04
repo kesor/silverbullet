@@ -94,26 +94,19 @@ export function luaDirectivePlugin(client: Client) {
                     (parsedLua.statements[0] as LuaFunctionCallStatement).call
                       .args[0];
 
-                  // Get metadata from the most reliable source available
-                  const pageName = client.currentName();
-                  let currentPageData = client.ui.viewState.current?.meta as PageMeta;
-                  
-                  // If UI state doesn't have metadata, try to get it from the client system cache
-                  if (!currentPageData || !currentPageData.date) {
-                    // Try to get from client system's cached objects
-                    try {
-                      const cachedMeta = client.clientSystem.system.objectCache.get(`page:${pageName}`);
-                      if (cachedMeta) {
-                        currentPageData = cachedMeta as PageMeta;
-                      }
-                    } catch (e) {
-                      // Fallback to basic page info
-                      currentPageData = { name: pageName } as PageMeta;
-                    }
-                  }
-                  
+                  // Get fresh metadata each time the widget renders
+                  const freshPageMeta = client.ui.viewState.current?.meta as PageMeta;
                   const tl = new LuaEnv();
-                  tl.setLocal("currentPage", currentPageData);
+                  tl.setLocal(
+                    "currentPage",
+                    freshPageMeta || (client.ui.viewState.current
+                      ? {
+                        name: getNameFromPath(
+                          client.ui.viewState.current.path,
+                        ),
+                      }
+                      : undefined),
+                  );
                   const sf = LuaStackFrame.createWithGlobalEnv(
                     client.clientSystem.spaceLuaEnv.env,
                     expr.ctx,
