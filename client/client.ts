@@ -553,11 +553,11 @@ export class Client {
                     this.widgetCache.clear();
                     setTimeout(() => {
                       try {
-                        this.runCommandByName("refreshWidgets").catch(console.error);
+                        this.runCommandByName("refreshAllWidgets").catch(console.error);
                       } finally {
                         this.isRefreshingWidgets = false;
                       }
-                    }, 0);
+                    }, 50); // Small delay to ensure UI state update completes
                   }
                 }
               })
@@ -1174,11 +1174,11 @@ export class Client {
           this.widgetCache.clear();
           setTimeout(() => {
             try {
-              this.runCommandByName("refreshWidgets").catch(console.error);
+              this.runCommandByName("refreshAllWidgets").catch(console.error);
             } finally {
               this.isRefreshingWidgets = false;
             }
-          }, 0);
+          }, 50);
         }
       } catch (e: any) {
         console.log(
