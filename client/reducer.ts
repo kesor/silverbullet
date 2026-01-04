@@ -52,9 +52,8 @@ export default function reducer(
           ? { ...action.meta, lastOpened: Date.now() }
           : pageMeta
       );
-      // Only update current page meta if it matches the currently loaded page
-      if (state.current && isMarkdownPath(state.current.path) && 
-          getNameFromPath(state.current.path) === action.pageName) {
+      // Only update current page meta if we have a current page
+      if (state.current && isMarkdownPath(state.current.path)) {
         return {
           ...state,
           current: {
