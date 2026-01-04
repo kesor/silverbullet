@@ -553,7 +553,7 @@ export class Client {
                     this.widgetCache.clear();
                     setTimeout(() => {
                       try {
-                        this.runCommandByName("editor:refresh").catch(console.error);
+                        this.runCommandByName("refreshAllWidgets").catch(console.error);
                       } finally {
                         this.isRefreshingWidgets = false;
                       }
@@ -1174,7 +1174,7 @@ export class Client {
           this.widgetCache.clear();
           setTimeout(() => {
             try {
-              this.runCommandByName("editor:refresh").catch(console.error);
+              this.runCommandByName("refreshAllWidgets").catch(console.error);
             } finally {
               this.isRefreshingWidgets = false;
             }
@@ -1209,6 +1209,19 @@ export class Client {
       pageName,
       previousPath ? getNameFromPath(previousPath) : undefined,
     ).catch(console.error);
+
+    // Always refresh widgets on page navigation to ensure fresh context
+    if (!this.isRefreshingWidgets) {
+      this.isRefreshingWidgets = true;
+      this.widgetCache.clear();
+      setTimeout(() => {
+        try {
+          this.runCommandByName("refreshAllWidgets").catch(console.error);
+        } finally {
+          this.isRefreshingWidgets = false;
+        }
+      }, 100);
+    }
 
     if (navigateWithinPage) {
       // Setup scroll position, cursor position, etc
