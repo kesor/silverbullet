@@ -544,8 +544,8 @@ export class Client {
                     meta: enrichedMeta,
                   });
 
-                  // Trigger widget refresh when page meta changes
-                  this.system.invokeFunction("codeWidget", "refreshAll", []).catch(console.error);
+                  // Dispatch event for Lua listeners
+                  this.eventHook.dispatchEvent("update-current-page-meta", enrichedMeta).catch(console.error);
                 }
               })
               .catch((e) => {
@@ -1154,8 +1154,8 @@ export class Client {
           meta: enrichedMeta,
         });
 
-        // Trigger widget refresh when page meta changes
-        this.system.invokeFunction("codeWidget", "refreshAll", []).catch(console.error);
+        // Dispatch event for Lua listeners
+        this.eventHook.dispatchEvent("update-current-page-meta", enrichedMeta).catch(console.error);
       } catch (e: any) {
         console.log(
           `There was an error trying to fetch enriched metadata: ${e.message}`,
