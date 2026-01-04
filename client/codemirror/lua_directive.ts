@@ -82,7 +82,7 @@ export function luaDirectivePlugin(client: Client) {
           Decoration.widget({
             widget: new LuaWidget(
               client,
-              `lua:${text}:${currentPageMeta?.name}`,
+              `lua:${text}:${client.currentName()}`,
               text,
               async (bodyText) => {
                 if (bodyText.trim().length === 0) {
