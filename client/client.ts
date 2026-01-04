@@ -80,7 +80,6 @@ import type { KvPrimitives } from "./data/kv_primitives.ts";
 import { deriveDbName } from "@silverbulletmd/silverbullet/lib/crypto";
 import { LuaRuntimeError } from "./space_lua/runtime.ts";
 import { resolveASTReference } from "./space_lua.ts";
-import { parse as YAML } from "https://deno.land/std@0.184.0/yaml/mod.ts";
 
 const frontMatterRegex = /^---\n(([^\n]|\n)*?)---\n/;
 
@@ -1068,8 +1067,12 @@ export class Client {
       const frontMatterMatch = doc.text.match(frontMatterRegex);
       if (frontMatterMatch) {
         try {
-          const frontMatter = YAML.parse(frontMatterMatch[1]);
-          doc.meta = { ...doc.meta, ...frontMatter };
+          // Simple frontmatter parsing - look for date field
+          const frontMatterText = frontMatterMatch[1];
+          const dateMatch = frontMatterText.match(/^date:\s*(.+)$/m);
+          if (dateMatch) {
+            doc.meta.date = dateMatch[1].trim();
+          }
         } catch (e) {
           console.warn("Failed to parse frontmatter:", e);
         }
