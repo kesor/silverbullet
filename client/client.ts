@@ -1063,6 +1063,11 @@ export class Client {
     try {
       doc = await this.space.readPage(pageName);
       
+      // Ensure doc.meta exists
+      if (!doc.meta) {
+        doc.meta = { name: pageName, ref: pageName };
+      }
+      
       // Parse frontmatter and add to metadata
       const frontMatterMatch = doc.text.match(frontMatterRegex);
       if (frontMatterMatch) {
