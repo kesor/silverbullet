@@ -545,20 +545,9 @@ export class Client {
                   });
 
                   // Trigger a no-op dispatch to refresh widgets with updated metadata
-                  // Use setTimeout to ensure React state update completes before triggering widget refresh
-                  // Only if no modal UI elements are open (to avoid interfering with user interaction)
-                  setTimeout(() => {
-                    const viewState = this.ui.viewState;
-                    if (
-                      !viewState.showCommandPalette &&
-                      !viewState.showPageNavigator &&
-                      !viewState.showFilterBox &&
-                      !viewState.showConfirm &&
-                      !viewState.showPrompt
-                    ) {
-                      this.editorView.dispatch({});
-                    }
-                  }, 0);
+                  queueMicrotask(() => {
+                    this.editorView.dispatch({});
+                  });
                 }
               })
               .catch((e) => {
@@ -1170,18 +1159,9 @@ export class Client {
         // Trigger a no-op dispatch to refresh widgets with updated metadata
         // Use setTimeout to ensure React state update completes before triggering widget refresh
         // Only if no modal UI elements are open (to avoid interfering with user interaction)
-        setTimeout(() => {
-          const viewState = this.ui.viewState;
-          if (
-            !viewState.showCommandPalette &&
-            !viewState.showPageNavigator &&
-            !viewState.showFilterBox &&
-            !viewState.showConfirm &&
-            !viewState.showPrompt
-          ) {
-            this.editorView.dispatch({});
-          }
-        }, 0);
+        queueMicrotask({
+          this.editorView.dispatch({});
+        });
       } catch (e: any) {
         console.log(
           `There was an error trying to fetch enriched metadata: ${e.message}`,
