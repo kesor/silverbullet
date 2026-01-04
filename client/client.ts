@@ -80,6 +80,7 @@ import type { KvPrimitives } from "./data/kv_primitives.ts";
 import { deriveDbName } from "@silverbulletmd/silverbullet/lib/crypto";
 import { LuaRuntimeError } from "./space_lua/runtime.ts";
 import { resolveASTReference } from "./space_lua.ts";
+import { parse as YAML } from "https://deno.land/std@0.184.0/yaml/mod.ts";
 
 const frontMatterRegex = /^---\n(([^\n]|\n)*?)---\n/;
 
@@ -544,9 +545,6 @@ export class Client {
                     type: "update-current-page-meta",
                     meta: enrichedMeta,
                   });
-
-                  // Force widget refresh by dispatching editor:pageLoaded event
-                  this.eventHook.dispatchEvent("editor:pageLoaded", pageName).catch(console.error);
                 }
               })
               .catch((e) => {
@@ -1065,6 +1063,17 @@ export class Client {
     let doc;
     try {
       doc = await this.space.readPage(pageName);
+      
+      // Parse frontmatter and add to metadata
+      const frontMatterMatch = doc.text.match(frontMatterRegex);
+      if (frontMatterMatch) {
+        try {
+          const frontMatter = YAML.parse(frontMatterMatch[1]);
+          doc.meta = { ...doc.meta, ...frontMatter };
+        } catch (e) {
+          console.warn("Failed to parse frontmatter:", e);
+        }
+      }
     } catch (e: any) {
       if (
         e.message !== notFoundError.message &&
@@ -1160,9 +1169,6 @@ export class Client {
           type: "update-current-page-meta",
           meta: enrichedMeta,
         });
-
-        // Force widget refresh by dispatching editor:pageLoaded event
-        this.eventHook.dispatchEvent("editor:pageLoaded", pageName).catch(console.error);
       } catch (e: any) {
         console.log(
           `There was an error trying to fetch enriched metadata: ${e.message}`,
