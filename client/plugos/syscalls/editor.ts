@@ -41,13 +41,18 @@ export function editorSyscalls(client: Client): SysCallMapping {
       return client.currentName();
     },
     "editor.getCurrentPageMeta": (): Promise<PageMeta | undefined> => {
-      // First try UI state, then fall back to index query
+      // Return immediately available metadata
+      if (client.currentPageMeta) {
+        return Promise.resolve(client.currentPageMeta);
+      }
+      
+      // Fallback to UI state
       const uiMeta = client.ui.viewState.current?.meta;
       if (uiMeta) {
         return Promise.resolve(uiMeta);
       }
       
-      // Fallback to index query
+      // Final fallback to index query
       const name = client.currentName();
       return client.clientSystem.localSyscall("index.getObjectByRef", [
         name,

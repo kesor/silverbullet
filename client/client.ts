@@ -142,6 +142,7 @@ export class Client {
   private progressTimeout?: number;
   // Widget and image height caching
   private widgetCache = new LimitedMap<WidgetCacheItem>(100); // bodyText -> WidgetCacheItem
+  private currentPageMeta: PageMeta | undefined;
   debouncedWidgetCacheFlush = throttle(() => {
     this.ds.set(["cache", "widgets"], this.widgetCache.toJSON())
       .catch(
@@ -1120,6 +1121,9 @@ export class Client {
     await this.pageMetaAugmenter.setAugmentation(pageName, {
       lastOpened: Date.now(),
     });
+
+    // Store current page metadata for immediate access
+    this.currentPageMeta = doc.meta;
 
     this.ui.viewDispatch({
       type: "page-loaded",
