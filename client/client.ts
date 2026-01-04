@@ -553,7 +553,7 @@ export class Client {
                     this.widgetCache.clear();
                     setTimeout(() => {
                       try {
-                        this.runCommandByName("refreshAllWidgets").catch(console.error);
+                        this.runCommandByName("refreshWidgets").catch(console.error);
                       } finally {
                         this.isRefreshingWidgets = false;
                       }
@@ -1174,7 +1174,7 @@ export class Client {
           this.widgetCache.clear();
           setTimeout(() => {
             try {
-              this.runCommandByName("refreshAllWidgets").catch(console.error);
+              this.runCommandByName("refreshWidgets").catch(console.error);
             } finally {
               this.isRefreshingWidgets = false;
             }
@@ -1216,7 +1216,7 @@ export class Client {
       this.widgetCache.clear();
       setTimeout(() => {
         try {
-          this.runCommandByName("refreshAllWidgets").catch(console.error);
+          this.runCommandByName("refreshWidgets").catch(console.error);
         } finally {
           this.isRefreshingWidgets = false;
         }
