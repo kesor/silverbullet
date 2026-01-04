@@ -544,8 +544,8 @@ export class Client {
                     meta: enrichedMeta,
                   });
 
-                  // Trigger a no-op dispatch to refresh widgets with updated metadata
-                  queueMicrotask(() => {
+                  // Queue widget refresh for next frame after state propagation completes
+                  requestAnimationFrame(() => {
                     this.editorView.dispatch({});
                   });
                 }
@@ -1156,10 +1156,8 @@ export class Client {
           meta: enrichedMeta,
         });
 
-        // Trigger a no-op dispatch to refresh widgets with updated metadata
-        // Use setTimeout to ensure React state update completes before triggering widget refresh
-        // Only if no modal UI elements are open (to avoid interfering with user interaction)
-        queueMicrotask({
+        // Queue widget refresh for next frame after state propagation completes
+        requestAnimationFrame(() => {
           this.editorView.dispatch({});
         });
       } catch (e: any) {

@@ -95,11 +95,9 @@ export function luaDirectivePlugin(client: Client) {
                       .args[0];
 
                   const tl = new LuaEnv();
-                  // Fetch current page metadata at execution time to get enriched frontmatter
-                  const currentPageMetaAtExecution = client.ui.viewState.current?.meta as PageMeta;
                   tl.setLocal(
                     "currentPage",
-                    currentPageMetaAtExecution || currentPageMeta || (client.ui.viewState.current
+                    currentPageMeta || (client.ui.viewState.current
                       ? {
                         name: getNameFromPath(
                           client.ui.viewState.current.path,
