@@ -94,10 +94,12 @@ export function luaDirectivePlugin(client: Client) {
                     (parsedLua.statements[0] as LuaFunctionCallStatement).call
                       .args[0];
 
+                  // Get fresh metadata each time the widget renders
+                  const freshPageMeta = client.ui.viewState.current?.meta as PageMeta;
                   const tl = new LuaEnv();
                   tl.setLocal(
                     "currentPage",
-                    currentPageMeta || (client.ui.viewState.current
+                    freshPageMeta || (client.ui.viewState.current
                       ? {
                         name: getNameFromPath(
                           client.ui.viewState.current.path,
