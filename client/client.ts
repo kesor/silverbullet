@@ -133,6 +133,8 @@ export class Client {
   }, 1000);
   // Track if plugs have been updated since sync cycle
   fullSyncCompleted = false;
+  // Track if we're currently refreshing widgets to prevent loops
+  private isRefreshingWidgets = false;
 
   // Set to true once the system is ready (plugs loaded)
   public systemReady: boolean = false;
@@ -543,6 +545,20 @@ export class Client {
                     type: "update-current-page-meta",
                     meta: enrichedMeta,
                   });
+
+                  // Clear widget cache and refresh widgets when metadata updates
+                  // Use flag to prevent infinite loops
+                  if (!this.isRefreshingWidgets) {
+                    this.isRefreshingWidgets = true;
+                    this.widgetCache.clear();
+                    setTimeout(() => {
+                      try {
+                        this.runCommandByName("editor:refresh").catch(console.error);
+                      } finally {
+                        this.isRefreshingWidgets = false;
+                      }
+                    }, 0);
+                  }
                 }
               })
               .catch((e) => {
@@ -1150,6 +1166,20 @@ export class Client {
           type: "update-current-page-meta",
           meta: enrichedMeta,
         });
+
+        // Clear widget cache and refresh widgets when metadata updates
+        // Use flag to prevent infinite loops
+        if (!this.isRefreshingWidgets) {
+          this.isRefreshingWidgets = true;
+          this.widgetCache.clear();
+          setTimeout(() => {
+            try {
+              this.runCommandByName("editor:refresh").catch(console.error);
+            } finally {
+              this.isRefreshingWidgets = false;
+            }
+          }, 0);
+        }
       } catch (e: any) {
         console.log(
           `There was an error trying to fetch enriched metadata: ${e.message}`,
