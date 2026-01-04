@@ -1172,6 +1172,15 @@ export class Client {
       path: path,
     });
 
+    // Still dispatch update-current-page-meta to trigger widget refresh
+    if (finalMeta !== doc.meta) {
+      this.ui.viewDispatch({
+        type: "update-current-page-meta",
+        meta: finalMeta,
+        pageName: pageName,
+      });
+    }
+
     // When loading a different page OR if the page is read-only (in which case we don't want to apply local patches, because there's no point)
     if (loadingDifferentPath || doc.meta.perm === "ro") {
       const editorState = createEditorState(

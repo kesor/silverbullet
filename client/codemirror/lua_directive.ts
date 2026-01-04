@@ -94,17 +94,8 @@ export function luaDirectivePlugin(client: Client) {
                     (parsedLua.statements[0] as LuaFunctionCallStatement).call
                       .args[0];
 
-                  // Get fresh metadata directly from client system instead of UI state
-                  let freshPageMeta: PageMeta;
-                  try {
-                    freshPageMeta = await client.clientSystem.getObjectByRef<PageMeta>(
-                      client.currentName(),
-                      "page", 
-                      client.currentName()
-                    ) || client.ui.viewState.current?.meta as PageMeta;
-                  } catch (e) {
-                    freshPageMeta = client.ui.viewState.current?.meta as PageMeta;
-                  }
+                  // Get fresh metadata each time the widget renders  
+                  const freshPageMeta = client.ui.viewState.current?.meta as PageMeta;
                   console.log("Widget metadata:", freshPageMeta);
                   const tl = new LuaEnv();
                   tl.setLocal(
