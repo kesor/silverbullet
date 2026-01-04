@@ -41,13 +41,24 @@ export function editorSyscalls(client: Client): SysCallMapping {
       return client.currentName();
     },
     "editor.getCurrentPageMeta": (): Promise<PageMeta | undefined> => {
+      // Return immediately available metadata
+      if (client.currentPageMeta) {
+        return Promise.resolve(client.currentPageMeta);
+      }
+      
+      // Fallback to UI state
+      const uiMeta = client.ui.viewState.current?.meta;
+      if (uiMeta) {
+        return Promise.resolve(uiMeta);
+      }
+      
+      // Final fallback to index query
       const name = client.currentName();
       return client.clientSystem.localSyscall("index.getObjectByRef", [
         name,
         "page",
         name,
       ]);
-      // return client.ui.viewState.current?.meta;
     },
     "editor.getCurrentPath": (_ctx): string => {
       return client.currentPath();

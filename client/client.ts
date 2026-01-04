@@ -142,6 +142,7 @@ export class Client {
   private progressTimeout?: number;
   // Widget and image height caching
   private widgetCache = new LimitedMap<WidgetCacheItem>(100); // bodyText -> WidgetCacheItem
+  public currentPageMeta: PageMeta | undefined;
   debouncedWidgetCacheFlush = throttle(() => {
     this.ds.set(["cache", "widgets"], this.widgetCache.toJSON())
       .catch(
@@ -1061,6 +1062,26 @@ export class Client {
     let doc;
     try {
       doc = await this.space.readPage(pageName);
+      
+      // Ensure doc.meta exists
+      if (!doc.meta) {
+        doc.meta = { name: pageName, ref: pageName };
+      }
+      
+      // Parse frontmatter and add to metadata
+      const frontMatterMatch = doc.text.match(frontMatterRegex);
+      if (frontMatterMatch) {
+        try {
+          // Simple frontmatter parsing - look for date field
+          const frontMatterText = frontMatterMatch[1];
+          const dateMatch = frontMatterText.match(/^date:\s*(.+)$/m);
+          if (dateMatch) {
+            doc.meta.date = dateMatch[1].trim();
+          }
+        } catch (e) {
+          console.warn("Failed to parse frontmatter:", e);
+        }
+      }
     } catch (e: any) {
       if (
         e.message !== notFoundError.message &&
@@ -1121,11 +1142,17 @@ export class Client {
       lastOpened: Date.now(),
     });
 
+    // Store current page metadata for immediate access
+    this.currentPageMeta = doc.meta;
+
     this.ui.viewDispatch({
       type: "page-loaded",
       meta: doc.meta,
       path: path,
     });
+
+    console.log("Basic meta:", doc.meta);
+    console.log("Has date?", doc.meta.date);
 
     // Fetch the meta which includes the possibly indexed stuff, like page
     // decorations
@@ -1376,6 +1403,7 @@ export class Client {
   getWidgetCache(key: string): WidgetCacheItem | undefined {
     return this.widgetCache.get(key);
   }
+
 
   async handleServiceWorkerMessage(message: ServiceWorkerSourceMessage) {
     switch (message.type) {
