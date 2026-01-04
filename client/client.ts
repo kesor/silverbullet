@@ -544,10 +544,9 @@ export class Client {
                     meta: enrichedMeta,
                   });
 
-                  // Queue widget refresh for next frame after state propagation completes
-                  requestAnimationFrame(() => {
-                    this.editorView.dispatch({});
-                  });
+                  // Clear widget cache and refresh widgets when page meta changes
+                  this.clearWidgetCacheForPage(enrichedMeta.name);
+                  this.clientSystem.localSyscall("system.invokeFunction", ["index.refreshWidgets"]).catch(console.error);
                 }
               })
               .catch((e) => {
@@ -1156,10 +1155,9 @@ export class Client {
           meta: enrichedMeta,
         });
 
-        // Queue widget refresh for next frame after state propagation completes
-        requestAnimationFrame(() => {
-          this.editorView.dispatch({});
-        });
+        // Clear widget cache and refresh widgets when page meta changes
+        this.clearWidgetCacheForPage(enrichedMeta.name);
+        this.clientSystem.localSyscall("system.invokeFunction", ["index.refreshWidgets"]).catch(console.error);
       } catch (e: any) {
         console.log(
           `There was an error trying to fetch enriched metadata: ${e.message}`,
@@ -1385,6 +1383,20 @@ export class Client {
 
   getWidgetCache(key: string): WidgetCacheItem | undefined {
     return this.widgetCache.get(key);
+  }
+
+  clearWidgetCacheForPage(pageName: string) {
+    // Clear all widget cache entries that contain this page name
+    const keysToDelete: string[] = [];
+    for (const [key] of this.widgetCache.entries()) {
+      if (key.endsWith(`:${pageName}`)) {
+        keysToDelete.push(key);
+      }
+    }
+    for (const key of keysToDelete) {
+      this.widgetCache.delete(key);
+    }
+    this.debouncedWidgetCacheFlush();
   }
 
   async handleServiceWorkerMessage(message: ServiceWorkerSourceMessage) {
