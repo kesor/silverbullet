@@ -94,8 +94,9 @@ export function luaDirectivePlugin(client: Client) {
                     (parsedLua.statements[0] as LuaFunctionCallStatement).call
                       .args[0];
 
-                  // Get fresh metadata each time the widget renders
+                  // Get fresh metadata each time the widget renders  
                   const freshPageMeta = client.ui.viewState.current?.meta as PageMeta;
+                  console.log("Widget metadata:", freshPageMeta);
                   const tl = new LuaEnv();
                   tl.setLocal(
                     "currentPage",
