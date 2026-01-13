@@ -1,4 +1,4 @@
-import YAML from "js-yaml";
+import { parse as parseYAML } from "./yaml.ts";
 import {
   collectNodesOfType,
   findNodeOfType,
@@ -47,7 +47,7 @@ export function indexData(
       const docs = codeText.split("---");
       // We support multiple YAML documents in one block
       for (let i = 0; i < docs.length; i++) {
-        const doc = YAML.load(docs[i]);
+        const doc = parseYAML(docs[i]);
         if (!doc) {
           continue;
         }
