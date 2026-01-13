@@ -80,6 +80,7 @@ import type { KvPrimitives } from "./data/kv_primitives.ts";
 import { deriveDbName } from "@silverbulletmd/silverbullet/lib/crypto";
 import { LuaRuntimeError } from "./space_lua/runtime.ts";
 import { resolveASTReference } from "./space_lua.ts";
+import { extractFrontmatter } from "../plugs/index/api.ts";
 
 const frontMatterRegex = /^---\n(([^\n]|\n)*?)---\n/;
 
@@ -1125,9 +1126,23 @@ export class Client {
       lastOpened: Date.now(),
     });
 
+    // Parse frontmatter synchronously to provide complete metadata to widgets
+    let pageMetaWithFrontmatter = doc.meta;
+    try {
+      const { frontmatter } = await extractFrontmatter(doc.text);
+      pageMetaWithFrontmatter = {
+        ...doc.meta,
+        ...frontmatter,
+        ...doc.meta, // Ensure built-in fields override user fields
+      };
+    } catch (e) {
+      console.warn("Failed to parse frontmatter:", e);
+      // Continue with basic metadata
+    }
+
     this.ui.viewDispatch({
       type: "page-loaded",
-      meta: doc.meta,
+      meta: pageMetaWithFrontmatter,
       path: path,
     });
 
