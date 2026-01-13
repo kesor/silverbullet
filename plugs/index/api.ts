@@ -168,7 +168,7 @@ export async function extractFrontmatter(
   extractOptions: FrontMatterExtractOptions = {},
 ): Promise<{ frontmatter: FrontMatter; text: string }> {
   const tree = await markdown.parseMarkdown(text);
-  const frontmatter = await extractFrontmatterFromTree(tree, extractOptions);
+  const frontmatter = extractFrontmatterFromTree(tree, extractOptions);
   return { frontmatter, text: renderToText(tree) };
 }
 
