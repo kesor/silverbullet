@@ -1146,6 +1146,9 @@ export class Client {
       path: path,
     });
 
+    // Ensure UI state is updated before creating editor state
+    await new Promise(resolve => setTimeout(resolve, 0));
+
     // Fetch the meta which includes the possibly indexed stuff, like page
     // decorations
     if (await this.clientSystem.hasInitialIndexCompleted()) {

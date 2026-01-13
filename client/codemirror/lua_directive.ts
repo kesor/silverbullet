@@ -94,7 +94,7 @@ export function luaDirectivePlugin(client: Client) {
                   const tl = new LuaEnv();
                   tl.setLocal(
                     "currentPage",
-                    currentPageMeta || (client.ui.viewState.current
+                    client.ui.viewState.current?.meta || (client.ui.viewState.current
                       ? {
                         name: getNameFromPath(
                           client.ui.viewState.current.path,
