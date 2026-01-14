@@ -1146,8 +1146,14 @@ export class Client {
       path: path,
     });
 
-    // Ensure UI state is updated before creating editor state
-    await new Promise(resolve => setTimeout(resolve, 0));
+    // Update viewState synchronously for immediate widget access
+    this.ui.viewState = {
+      ...this.ui.viewState,
+      current: {
+        path: path,
+        meta: pageMetaWithFrontmatter,
+      },
+    };
 
     // Fetch the meta which includes the possibly indexed stuff, like page
     // decorations
